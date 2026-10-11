@@ -10,7 +10,7 @@ from typing import Annotated
 import joblib
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -126,11 +126,6 @@ def create_app(model_path: Path | None = None) -> FastAPI:
     app = FastAPI(title="Sàng lọc nguy cơ trễ hạn", version="1.0.0", lifespan=lifespan)
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     app.mount("/reports", StaticFiles(directory=ROOT / "reports"), name="reports")
-
-    @app.get("/favicon.ico", include_in_schema=False)
-    async def favicon() -> Response:
-        """Avoid a harmless browser 404 when no custom tab icon is supplied."""
-        return Response(status_code=204)
 
     @app.exception_handler(RequestValidationError)
     async def request_validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:

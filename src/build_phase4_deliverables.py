@@ -89,10 +89,9 @@ PAGES = [
         "Audit không chứng minh mô hình công bằng, cũng không thiết lập quan hệ nhân quả. Chênh lệch có thể xuất phát từ cỡ mẫu, phân phối dữ liệu, lịch sử đo lường và mô hình. Các mã chưa rõ nghĩa vẫn được giữ tách biệt."
     ]),
     ("Web và API", [
-        "5.3. Ba màn hình chính gồm Giới thiệu, Mô phỏng nguy cơ và Dashboard/Model card. Màn Giới thiệu nêu phạm vi; Mô phỏng nhận 23 đặc trưng; Dashboard tách riêng validation và test. Dữ liệu demo không lấy từ test.",
-        "5.6. FastAPI nạp pipeline joblib một lần khi khởi động, kiểm tra hash so với freeze và không train theo request. Pipeline là Logistic Regression không class weight, C=1.0, xác suất gốc, ngưỡng 0.150. POST /api/risk-score từ chối ID, target, trường thừa/thiếu, sai kiểu, mã bất hợp lệ và số không hữu hạn.",
-        "5.8. Kiểm tra tính nhất quán giữa pipeline và API: API dùng đúng pipeline joblib đã đóng băng, trả probability_default, threshold=0.150, alert, alert_group và model_version. Giá trị hợp lệ nhưng ngoài miền train được trả trong outside_training_range và cảnh báo, không bị thay thế âm thầm.",
-        "5.9. Hiệu năng API không được báo bằng số vì dự án chưa thực hiện benchmark thời gian phản hồi. Nội dung này được gộp vào kiểm thử chức năng: request hợp lệ/cảnh báo ngoài miền, input không hợp lệ và model không khả dụng."
+        "FastAPI nạp pipeline một lần khi khởi động, kiểm tra hash so với freeze và không train theo request. POST /api/risk-score nhận chính xác 23 đặc trưng, từ chối ID, target, trường thừa, thiếu trường, sai kiểu, mã bất hợp lệ và số không hữu hạn.",
+        "API phân biệt giá trị không hợp lệ với giá trị hợp lệ nhưng ngoài miền train. Trường hợp sau được trả trong outside_training_range và cảnh báo, không bị thay thế âm thầm. API trả probability_default, threshold=0.150, alert, alert_group và model_version.",
+        "Giao diện tiếng Việt gồm Giới thiệu, Mô phỏng, Dashboard và model card. Dữ liệu mô phỏng là synthetic có nhãn rõ; không dùng test làm demo. Dashboard hiển thị validation và test tách biệt."
     ]),
     ("Đạo đức và giới hạn", [
         "Dữ liệu là lịch sử quan sát tại Đài Loan, không đại diện cho mọi thời gian, quốc gia, sản phẩm hoặc dân số. Chất lượng nhãn, thiên lệch lịch sử và thay đổi hành vi theo thời gian có thể làm suy giảm hiệu lực.",
