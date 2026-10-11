@@ -21,16 +21,20 @@ function base(title, subtitle="") {
   if (subtitle) box(slide, subtitle, 74, 110, 1110, 34, 17, {color:muted});
   return slide;
 }
-function bullets(slide, items, top=165) { items.forEach((x,i)=>box(slide, `• ${x}`, 92, top+i*72, 1050, 58, 20, {color:ink})); }
+function bullets(slide, items, top=165, width=1050) { items.forEach((x,i)=>box(slide, `• ${x}`, 92, top+i*72, width, 58, 20, {color:ink})); }
 function footer(slide, n){ box(slide, `Project 08   |   ${n}/11`, 1000, 680, 200, 20, 11, {color:muted,align:"right"}); }
+async function image(slide, relative, left, top, width, height, alt) {
+  const bytes = await fs.readFile(path.join(root, relative));
+  slide.images.add({blob:bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset+bytes.byteLength),contentType:"image/png",alt,fit:"contain",position:{left,top,width,height}});
+}
 
 let s = deck.slides.add(); s.background.fill=navy; box(s,"Project 08",88,120,600,70,42,{bold:true,color:"#FFFFFF"}); box(s,"Ước lượng nguy cơ trễ hạn thanh toán thẻ tín dụng",88,204,760,60,28,{color:"#FFFFFF"}); box(s,"Báo cáo bàn giao | [BỔ SUNG tên thành viên] | 08/10/2026",90,580,680,28,16,{color:"#D7E8F0"});
 
 s=base("Bối cảnh và mục tiêu","Hỗ trợ học tập cho quy trình nhắc thanh toán, không quyết định cấp tín dụng"); bullets(s,["Target: default_payment_next_month theo bộ dữ liệu UCI", "Câu hỏi: ưu tiên cảnh báo với trade-off chi phí giả định", "Không suy diễn nguyên nhân cá nhân hoặc đưa ra quyết định bất lợi"]); footer(s,2);
 
-s=base("Dữ liệu và thời điểm dự đoán","Default of Credit Card Clients từ UCI, 30.000 bản ghi, 25 cột"); bullets(s,["Lịch sử 6 tháng: PAY_*, BILL_AMT*, PAY_AMT*", "ID chỉ cố định split, không là đặc trưng; target không đi vào pipeline", "CSV Kaggle chỉ dùng đối chiếu nội dung, không thay nguồn UCI"]); footer(s,3);
+s=base("Dữ liệu và thời điểm dự đoán","Default of Credit Card Clients từ UCI, 30.000 bản ghi, 25 cột"); bullets(s,["Lịch sử 6 tháng: PAY_*, BILL_AMT*, PAY_AMT*", "ID chỉ cố định split, không là đặc trưng; target không đi vào pipeline", "CSV Kaggle chỉ dùng đối chiếu nội dung, không thay nguồn UCI"],165,530); await image(s,"reports/figures/train_target_distribution.png",660,175,500,360,"Phân bố target trên train"); footer(s,3);
 
-s=base("Chống leakage","Cùng split cho toàn bộ thí nghiệm và test bị cô lập"); bullets(s,["Stratified 60/20/20, random_state=42; EDA chỉ dùng train", "Imputation, scaling, one-hot nằm trong Pipeline và fit trong train/fold", "Không oversample trước split; không dùng test để chọn C, model hay threshold"]); footer(s,4);
+s=base("Chống leakage","Cùng split cho toàn bộ thí nghiệm và test bị cô lập"); bullets(s,["Stratified 60/20/20, random_state=42; EDA chỉ dùng train", "Imputation, scaling, one-hot nằm trong Pipeline và fit trong train/fold", "Không oversample trước split; không dùng test để chọn C, model hay threshold"],165,500); await image(s,"reports/figures/train_continuous_feature_correlation.png",640,160,530,390,"Heatmap tương quan train-only"); footer(s,4);
 
 s=base("Baseline và lựa chọn mô hình","Logistic Regression, C chọn bằng Stratified 5-fold CV trên train"); bullets(s,["Baseline luôn không-default đặt mốc tối thiểu", "Unweighted và class_weight=balanced cùng C=1.0", "Không gọi chênh AP ~0.0004 là vượt trội rõ rệt; chọn unweighted theo chi phí validation và Brier"]); footer(s,5);
 
@@ -38,12 +42,12 @@ s=base("Bốn thí nghiệm bắt buộc","Accuracy không đủ khi lớp defau
 
 s=base("Ngưỡng 0.150 và chi phí giả định","Quy ước FP=1, FN=5, TP=TN=0; không phải chi phí thực ngân hàng"); bullets(s,["Ngưỡng lý thuyết: 1 / (1 + 5) = 0.1667", "Validation unweighted @ 0.150: cost 3405, 0.5675/khách, recall 0.7483", "Hạ ngưỡng tăng recall nhưng tăng cảnh báo nhầm và làm accuracy giảm"]); footer(s,7);
 
-s=base("Kết quả test sau freeze","Đánh giá duy nhất sau khi pipeline, C, calibration và threshold được khóa"); bullets(s,["Accuracy 0.6452 | Precision 0.3542 | Recall 0.7340 | F1 0.4778", "AP 0.5254 | ROC-AUC 0.7591 | Brier 0.1388", "TN 2897 | FP 1776 | FN 353 | TP 974 | Cost 3541 (0.5902/khách)"]); footer(s,8);
+s=base("Kết quả test sau freeze","Đánh giá duy nhất sau khi pipeline, C, calibration và threshold được khóa"); bullets(s,["Accuracy 0.6452 | Precision 0.3542 | Recall 0.7340 | F1 0.4778", "AP 0.5254 | ROC-AUC 0.7591 | Brier 0.1388", "TN 2897 | FP 1776 | FN 353 | TP 974 | Cost 3541 (0.5902/khách)"],165,500); await image(s,"reports/figures/final_test_confusion_matrix.png",655,155,490,400,"Ma trận nhầm lẫn test"); footer(s,8);
 
-s=base("Audit và giới hạn","Không kết luận công bằng từ một chỉ số hoặc từ nhóm mẫu nhỏ"); bullets(s,["SEX mã 1: recall 0.7861, FPR 0.4318; mã 2: recall 0.6958, FPR 0.3464", "EDUCATION 0, 4, 5, 6 và MARRIAGE 0, 3 có nhóm nhỏ hoặc ít default", "Mã chưa rõ nghĩa vẫn là nhóm riêng; audit không chứng minh quan hệ nhân quả"]); footer(s,9);
+s=base("Audit và giới hạn","Không kết luận công bằng từ một chỉ số hoặc từ nhóm mẫu nhỏ"); bullets(s,["SEX mã 1: recall 0.7861, FPR 0.4318; mã 2: recall 0.6958, FPR 0.3464", "EDUCATION 0, 4, 5, 6 và MARRIAGE 0, 3 có nhóm nhỏ hoặc ít default", "Mã chưa rõ nghĩa vẫn là nhóm riêng; audit không chứng minh quan hệ nhân quả"],165,500); await image(s,"reports/figures/final_test_group_audit_rates.png",640,175,530,355,"Audit theo nhóm"); footer(s,9);
 
 s=base("Sản phẩm web và API","Pipeline phục vụ được nạp một lần khi khởi động"); bullets(s,["POST /api/risk-score nhận 23 đặc trưng, từ chối ID/target và dữ liệu không hợp lệ", "Trả xác suất, threshold 0.150, nhóm cảnh báo và model version", "Ba màn hình: Giới thiệu, Mô phỏng, Dashboard; thanh trượt chỉ minh họa validation"]); footer(s,10);
 
 s=base("Demo và kết luận","Demo 5-7 phút trong tổng thời lượng 12-15 phút"); bullets(s,["Demo: dữ liệu → leakage → dashboard → mô phỏng → API → giới hạn", "Chỉ phục vụ học tập và hỗ trợ nhắc thanh toán", "Không tuning lại từ test; tái lập theo README và deliverables/reproducibility.md"]); footer(s,11);
 
-const pptx=await PresentationFile.exportPptx(deck); await pptx.save(path.join(out,"Project_08_trinh_bay_draft.pptx"));
+const pptx=await PresentationFile.exportPptx(deck); await pptx.save(path.join(out,"Project_08_trinh_bay_chi_tiet.pptx"));
