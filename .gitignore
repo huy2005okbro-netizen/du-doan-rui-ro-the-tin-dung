@@ -26,3 +26,7 @@ Thumbs.db
 scipy-*.whl
 scipy-release.json
 .docx_read_qa/
+
+# Temporary files generated while building or opening presentation files
+.phase4_ppt_build/
+deliverables/~$*.pptx
