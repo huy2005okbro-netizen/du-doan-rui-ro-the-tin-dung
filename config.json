@@ -1,0 +1,25 @@
+{
+  "random_state": 42,
+  "split": {
+    "train_size": 0.6,
+    "validation_size": 0.2,
+    "test_size": 0.2,
+    "stratify": true
+  },
+  "target_column": "default_payment_next_month",
+  "id_column": "ID",
+  "decision_threshold": 0.5,
+  "phase2": {
+    "cv_folds": 5,
+    "c_grid": [0.01, 0.1, 1.0, 10.0],
+    "cv_scoring": "average_precision",
+    "reliability_bins": 10,
+    "threshold_grid_step": 0.001,
+    "cost_matrix_assumed": {
+      "true_negative": 0,
+      "false_positive": 1,
+      "false_negative": 5,
+      "true_positive": 0
+    }
+  }
+}

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.python_packages/
+.pytest_cache/
+
+# Local data and generated model artifacts (never commit the raw UCI data)
+data/raw/
+data/processed/
+models/*.joblib
+models/*.json
+
+# Generated reports
+reports/figures/*.png
+reports/*.csv
+reports/*.json
+reports/*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local dependency-download diagnostics
+scipy-*.whl
+scipy-release.json
+.docx_read_qa/

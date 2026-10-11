@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sàng lọc nguy cơ trễ hạn</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div><strong>Sàng lọc nguy cơ trễ hạn</strong><span> Project 08 · Học máy cơ bản</span></div>
+    <nav aria-label="Điều hướng">
+      <button data-screen="intro" class="active">Giới thiệu</button>
+      <button data-screen="simulator">Mô phỏng</button>
+      <button data-screen="dashboard">Dashboard & Model card</button>
+    </nav>
+  </header>
+  <main>
+    <section id="intro" class="screen active">
+      <div class="hero"><p class="eyebrow">Hỗ trợ học tập</p><h1>Ưu tiên nhắc thanh toán, không quyết định cấp tín dụng</h1><p>Công cụ minh họa xác suất default tháng sau từ bộ UCI Default of Credit Card Clients. Kết quả chỉ hỗ trợ ưu tiên liên hệ hoặc tư vấn tài chính.</p></div>
+      <div class="grid cards"><article><h2>Nguồn dữ liệu</h2><p>UCI Default of Credit Card Clients, 30.000 quan sát lịch sử. Đơn vị tiền tệ là NT$, không phải VNĐ.</p></article><article><h2>Phạm vi</h2><p>Không dùng để tự động từ chối tín dụng, xử phạt, định giá cá nhân hay suy luận nguyên nhân cá nhân.</p></article><article><h2>Ngưỡng đóng băng</h2><p id="intro-threshold">Đang tải cấu hình mô hình…</p></article></div>
+      <article class="notice"><h2>Giải thích PAY_*</h2><p><code>-2</code> không tiêu dùng, <code>-1</code> trả đúng hạn, <code>0</code> tín dụng quay vòng, <code>1</code> trễ 1 tháng đến <code>9</code> trễ từ 9 tháng trở lên. Các mã EDUCATION/MARRIAGE chưa được tài liệu gốc giải thích vẫn được giữ nguyên.</p></article>
+    </section>
+
+    <section id="simulator" class="screen">
+      <h1>Mô phỏng điểm rủi ro</h1><p class="muted">Nhập 23 đặc trưng mô hình cần. Không nhập ID hoặc target. Ứng dụng không dùng local storage và không lưu dữ liệu form.</p>
+      <div class="toolbar"><button id="fill-demo" type="button">Nạp dữ liệu mô phỏng</button><span>Dữ liệu mẫu là mô phỏng, không lấy từ test.</span></div>
+      <form id="risk-form">
+        <fieldset><legend>Thông tin cơ bản</legend><div class="form-grid" id="basic-fields"></div></fieldset>
+        <fieldset><legend>Lịch sử trả nợ 6 tháng</legend><p class="hint">PAY_0 là tháng gần nhất; các trường còn lại là PAY_2 đến PAY_6.</p><div class="form-grid" id="pay-fields"></div></fieldset>
+        <fieldset><legend>Sao kê và thanh toán 6 tháng</legend><p class="hint">BILL_AMT*: số dư sao kê (NT$). PAY_AMT*: khoản thanh toán trước đó (NT$).</p><div class="form-grid" id="money-fields"></div></fieldset>
+        <button class="primary" type="submit">Tính điểm rủi ro</button>
+      </form>
+      <article id="result" class="result" hidden></article>
+    </section>
+
+    <section id="dashboard" class="screen">
+      <h1>Dashboard đánh giá và model card</h1><p class="muted">Validation được dùng để chọn mô hình/ngưỡng; test là lần đánh giá cuối với lựa chọn đã đóng băng.</p>
+      <div id="metrics" class="grid cards"></div>
+      <article><h2>So sánh validation</h2><div class="table-wrap"><table id="validation-table"></table></div></article>
+      <article><h2>Minh họa trade-off trên validation</h2><p>Thanh trượt chỉ thay đổi phần minh họa từ validation; không đổi pipeline, cấu hình chính thức hay kết quả test.</p><label>Ngưỡng mô phỏng <input id="threshold-slider" type="range" min="0.05" max="0.70" step="0.01" value="0.15"> <output id="threshold-value">0.15</output></label><div id="tradeoff" class="tradeoff"></div></article>
+      <div class="grid"><article><h2>Biểu đồ cuối</h2><img src="/reports/figures/final_test_pr_roc_curves.png" alt="Đường PR và ROC trên test"><img src="/reports/figures/final_test_reliability_diagram.png" alt="Reliability diagram trên test"></article><article><h2>Ma trận nhầm lẫn test</h2><img src="/reports/figures/final_test_confusion_matrix.png" alt="Confusion matrix trên test"></article></div>
+      <article><h2>Audit sai số theo nhóm trên test</h2><p class="hint">Nhóm nhỏ và metric không xác định cần diễn giải thận trọng. Bảng không chứng minh công bằng.</p><div class="table-wrap"><table id="audit-table"></table></div></article>
+      <article><h2>Model card tóm tắt</h2><ul><li>Mô hình Logistic Regression không class weight, C=1.0; preprocessing nằm trong pipeline.</li><li>Xác suất gốc, không hiệu chỉnh calibration; ngưỡng chính thức được chọn trên validation.</li><li>Chi phí là kịch bản giả định FP=1, FN=5; không phải chi phí của ngân hàng.</li><li>Chỉ dùng để học tập và hỗ trợ nhắc thanh toán.</li></ul><a href="/reports/model_card.md" target="_blank">Mở model card đầy đủ</a> · <a href="/reports/final_test_report.md" target="_blank">Mở báo cáo test</a></article>
+    </section>
+  </main>
+  <footer>Không lưu dữ liệu đầu vào. Kết quả cần được đánh giá ở cấp hệ thống, không diễn giải như nguyên nhân cá nhân.</footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>
